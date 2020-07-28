@@ -12,7 +12,7 @@ import (
 func JwtAuthentication(next fasthttp.RequestHandler) fasthttp.RequestHandler {
     return func(ctx *fasthttp.RequestCtx) {
 
-		notAuth := []string{"/new", "/login", "/static/index.html"} // list of endpoints that do not require authorization  
+		notAuth := []string{"/new", "/login", "/static/index.html", "/"} // list of endpoints that do not require authorization  
 		requestPath := string(ctx.Path()) //current path of request
 		tokenHeader :=  string(ctx.Request.Header.Cookie("token"))
 		//fmt.Println("res "+tokenHeader)

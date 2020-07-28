@@ -175,6 +175,11 @@ func (server *WebServer) Start(errc chan<- error) {
 	router.POST("/new", server.createAccount)
 	router.POST("/login", server.authenticate)
 	router.POST("/logout", server.logout)
+	
+	router.GET("/", func(ctx *fasthttp.RequestCtx) {
+		log.Println("go to index")
+		ctx.Redirect("static/index.html", 200)
+	  })
 
 	router.ServeFiles("/static/*filepath", "./static")
 

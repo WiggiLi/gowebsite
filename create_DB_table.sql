@@ -11,11 +11,10 @@ CREATE TABLE content_page (
 );
 
 
-CREATE TABLE Comments (
-	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-	Page INT,
-	Title NVARCHAR(255),
-	Description NVARCHAR(255)
+CREATE TABLE comments (
+	page integer,
+	name varchar(255),
+	content text
 );
 
 CREATE TABLE "accounts" (
