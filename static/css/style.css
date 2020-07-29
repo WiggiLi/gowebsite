@@ -1,0 +1,330 @@
+body {
+    font-family: 'Handlee', cursive;
+    font-size: 14pt;
+    background-color: #efefef;
+	background: url(../img/phone2.png) no-repeat;
+	background-size: cover;	
+}
+
+#header{
+  text-align: center
+}
+h1{
+	color:#483D8B;
+	text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+}
+ p {
+    text-indent: 20px; /* Отступ первой строки в пикселах */
+ }
+ 
+
+#titles {
+  position: absolute;
+  bottom: 10px;
+} 
+
+#reason{
+	font-size: 20px;
+	color:#A52A2A
+}
+
+.wrap{
+  width: 1000px; /* Ширина макета */
+  margin: 0 auto;
+  position: relative;
+}
+
+.pages{
+  margin: 0 100px 0 100px; /* Отступ на ширину левой и правой колонки*/
+}
+
+
+
+
+
+.page{
+  display: block;
+  /*opacity: 1;*/
+  /*transition: all 3s linear;*/
+}
+
+
+.left{
+  width: 100px; /* Ширина левой колонки */
+  float: left;
+}
+ .img_left { 
+  width:80px;
+  position: absolute;
+  top: 400px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  margin-right: 20px;
+  border-radius: 50%;
+} 
+
+.sextion { 
+  background-color: #fff;
+  padding: 5px 15px 15px 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  opacity: 0.8;
+} 
+
+.content{
+  min-height:500px;
+  position: relative;
+} 
+
+.comment {
+    min-height:400px;
+}
+
+.right{
+  width: 100px; /* Ширина правой колонки */
+  float: right;
+}
+
+.img_right {
+  width: 80px; 
+  position: absolute;
+  top: 400px;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  margin-left: 20px;
+  border-radius: 50%;
+} 
+
+
+
+#dr{
+	margin: auto 120px;
+}
+
+#bb{
+	width: 320px;
+	height: 450px;
+	border-radius: 15px;
+	position: relative;
+	left: 50%;
+	transform: translate(-50%);
+}
+#git{
+	position: relative;
+	left: 50%;
+	transform: translate(-50%);
+}
+
+#progr{
+	width: 120px;
+	height: 90px;
+	float: right;
+	
+}
+
+#mat{
+	width: 400px;
+	height: 250px;
+	border-radius: 15px;
+	position: relative;
+	left: 50%;
+	transform: translate(-50%);
+}
+
+#car{
+	width: 190px;
+	height: 150px;
+	position: relative;
+	left: 50%;
+	transform: translate(-100%);
+}
+
+#lidar{
+	width: 190px;
+	height: 150px;
+	position: relative;
+	left: 50%;
+	transform: translate(-80%);
+}
+
+#hand{
+	width: 200px;
+	height: 250px;
+	position: relative;
+	left: 50%;
+	transform: translate(-50%);
+}
+
+#nat1,#nat2, #nat3 {
+	width: 250px;
+	height: 200px;
+}
+
+#rob1,#rob2, #rob3 {
+	width: 200px;
+	height: 170px;
+}
+#rob1{margin-left:70px;}
+/*animation for "happy birthday"*/
+font{
+	font-size: 100px;
+	opacity: 0;
+	animation-name: example;
+    animation-duration: 5s;
+	animation-delay: 4s;
+	animation-fill-mode: forwards;
+}
+
+@keyframes example {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+/*end animation for "happy birthday"*/
+
+
+
+
+
+
+/*styles for video*/
+#fade {
+  display: none;
+  position: fixed;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 1001;
+  -moz-opacity: 0.8;
+  opacity: .80;
+  filter: alpha(opacity=80);
+  pointer-events: none;
+}
+
+#light {
+  display: none;
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  max-width: 800px;
+  max-height: 530px;
+  margin-left: -400px;
+  margin-top: -450px;
+  border: 2px solid #FFF;
+  background: #FFF;
+  z-index: 1002;
+  overflow: visible;
+  
+  
+}
+
+#boxclose {
+  float: right;
+  cursor: pointer;
+  color: #fff;
+  border: 1px solid #AEAEAE;
+  border-radius: 3px;
+  background: #222222;
+  font-size: 31px;
+  font-weight: bold;
+  display: inline-block;
+  line-height: 0px;
+  padding: 11px 3px;
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  z-index: 1002;
+  opacity: 0.9;
+}
+
+.boxclose:before {
+  content: "×";
+}
+
+#fade:hover ~ #boxclose {
+  display:none;
+}
+
+.video_img{
+	width: 150px;
+	height:190px;
+	top: 5px;
+	left: 640px;
+	position:absolute;
+	
+}
+
+.relation{
+	position: relative;
+}
+
+.rel{
+	position:absolute
+}
+/*end styles for video*/
+
+.com_img{
+	float: left;
+	width: 90px;
+	height: 90px;
+}
+
+.add_img_com{
+	float: left;
+	width: 80px;
+	height: 35px;
+	transform: translate(5px, -60px);
+	padding: 0px 0px 0px 0px; 
+}	
+
+
+.submit {
+    background-color: #3fb6b2;
+    padding: 12px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #ffffff;
+    border: none;
+    outline: none;
+    margin: 0 0 0 240px;
+    font-weight: bold;
+	width:100px;
+}
+
+.submit:hover {
+    background-color: #43a09d;
+}
+.textarea_out, textarea {
+    height: 30px;
+	margin-bottom:90px;
+	padding-bottom: 40px;
+}
+input, textarea {
+    margin-bottom: 10px;
+    font-size: 11pt;
+    padding: 15px 10px 10px;
+    border: 1px solid #cecece;
+    background-color: #efefef;
+    color: #787575;
+    border-radius: 5px;
+    width: 50%;
+	margin: 0 0 5px 35px;
+    outline: none;
+}
+
+.name_out, .textarea_out{
+	
+    font-size: 11pt;
+    width: 85%;
+	margin: 0 50px 5px 110px;
+    outline: none;
+}
+
+
+
+
+
+
+
+

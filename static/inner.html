@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Потому что</title>
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+    
+   <body>
+<p id="name"></p>
+<form method="POST" action="http://localhost:4200/logout">
+	<button type="submit">Logout</button>
+</form>
+      <div id="header">
+            <h1>TITLE</h1>
+      </div>
+      <div class="wrap"> <!-- START CONTAINER "WRAP"-->     
+      <div class="left">  <!-- left column-->
+            <a href=# class="ref"><img alt=""  class="img img_left" src="img/str.png" onclick="prev()"></a>
+      </div>       
+      <div class="right">  <!-- right column-->
+            <a href=# class="ref"><img alt="" class="img img_right" src="img/str2.png" onclick="next()"></a>
+      </div>
+        
+				
+        <div class=pages> <!-- center column-->
+          
+			 <!-- 1 PAGE -->
+			  <div class="page"> 
+
+				<div class="sextion content">
+					<p id="reason"></p>
+					<div id="inner"><p></p></div>
+				 
+					<a href=# id="titles"><strong>Content</strong></a>
+
+				</div>
+				
+				<div class="sextion comment">			
+					<h3 id="title_com">Comments</h3>
+					<div id="box"></div>
+			
+					<form>
+						<img  class="com_img" alt=""  src="img/guest.png" >
+						<input  id="name_input" type="text"   placeholder="Name"/><br/>
+						<textarea id="text_input"  placeholder="Message"  ></textarea>	
+						<div class ="submit" onclick="add_com()" >SEND</div>
+						
+						<button class="add_img_com">add<br/>image</button>
+					</form>
+						
+				</div>
+
+			</div> <!-- END 1 PAGE -->
+		  
+		
+                 
+        </div><!-- END PAGES -->      
+       
+    </div> <!-- END WRAP -->
+	
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>  
+    <script src ="js/behavior.js"></script>
+   </body>
+</html>
