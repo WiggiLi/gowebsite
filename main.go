@@ -1,17 +1,15 @@
 package main
 
 import (
-	"gowebsite/api"
-	"gowebsite/app"
-	"gowebsite/dal"
 	"log"
+
+	"github.com/WiggiLi/gowebsite/api"
+	"github.com/WiggiLi/gowebsite/app"
+	"github.com/WiggiLi/gowebsite/dal"
 )
 
 func run(errc chan<- error) {
-	//time.Sleep(time.Second * 10)
-
-	// TODO: init DAL here for MS SQL
-	db, err := dal.NewMsSQL("localhost", 1434)
+	db, err := dal.NewPSQL("localhost", 1434)
 	if err != nil {
 		errc <- err
 		return

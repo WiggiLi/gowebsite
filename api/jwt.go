@@ -1,32 +1,28 @@
 package api
 
 import (
-	"gowebsite/app"
-	"github.com/valyala/fasthttp" 
-	jwt "github.com/dgrijalva/jwt-go"
-	"os"
-	//"fmt"
 	"encoding/json"
+	"os"
+
+	"github.com/WiggiLi/gowebsite/app"
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/valyala/fasthttp"
 )
 
 func JwtAuthentication(next fasthttp.RequestHandler) fasthttp.RequestHandler {
-    return func(ctx *fasthttp.RequestCtx) {
+	return func(ctx *fasthttp.RequestCtx) {
 
-		notAuth := []string{"/new", "/login", "/static/index.html", "/"} // list of endpoints that do not require authorization  
-		requestPath := string(ctx.Path()) //current path of request
-		tokenHeader :=  string(ctx.Request.Header.Cookie("token"))
-		//fmt.Println("res "+tokenHeader)
+		notAuth := []string{"/new", "/login", "/static/index.html", "/", "/static/css/bootstrap.css", "/static/css/signin.css", "/favicon.ico"} // list of endpoints that do not require authorization
+		requestPath := string(ctx.Path())                                                                                                       //current path of request
+		tokenHeader := string(ctx.Request.Header.Cookie("token"))
 
-		
+		response := make(map[string]interface{})
 
-		response := make(map[string] interface{})
-		
-		
-		if tokenHeader == "" { 
+		if tokenHeader == "" {
 			for _, value := range notAuth {
 
 				if value == requestPath {
-					next(ctx) 
+					next(ctx)
 					return
 				}
 			}
@@ -48,13 +44,13 @@ func JwtAuthentication(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 			*/
 		}
 
-		tk := &app.Token{}            
+		tk := &app.Token{}
 
 		token, err := jwt.ParseWithClaims(tokenHeader, tk, func(token *jwt.Token) (interface{}, error) {
-						return []byte(os.Getenv("token_password")), nil
-					})
+			return []byte(os.Getenv("token_password")), nil
+		})
 
-		if err != nil { 
+		if err != nil {
 			response["status"] = false
 			response["message"] = "Malformed authentication token"
 			ctx.Response.SetStatusCode(fasthttp.StatusForbidden) //403 http-code
@@ -63,7 +59,7 @@ func JwtAuthentication(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 			return
 		}
 
-		if !token.Valid { 
+		if !token.Valid {
 			response["status"] = false
 			response["message"] = "Token is not valid"
 			ctx.Response.SetStatusCode(fasthttp.StatusForbidden)
@@ -72,7 +68,7 @@ func JwtAuthentication(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 			return
 		}
 
-		//fmt.Printf("User %d", tk.UserId) 
-		next(ctx) 
-	};
+		//fmt.Printf("User %d", tk.UserId)
+		next(ctx)
+	}
 }

@@ -1,26 +1,25 @@
 package app
- import (
-	 "github.com/dgrijalva/jwt-go"
- )
+
+import (
+	"github.com/dgrijalva/jwt-go"
+)
 
 //COMMENTS
-type Event struct {
-	Pag         string `json:"Pag"` //
-	ID          string `json:"ID"`
-	Page        string `json:"Page"`
-	Title       string `json:"Title"`
-	Description string `json:"Description"`
+type Comment struct {
+	Page    string `json:"Page"`
+	Name    string `json:"Name"`
+	Content string `json:"Content"`
 }
 
-// NewEvent constructs a event object
-func NewEvent() *Event {
-	return &Event{}
+// NewComment constructs a Comment object
+func NewComment() *Comment {
+	return &Comment{}
 }
 
-type AllEvents []Event
+type AllComments []Comment
 
-func GetEvents() *AllEvents {
-	return &AllEvents{}
+func GetComments() *AllComments {
+	return &AllComments{}
 }
 
 ///Content
@@ -63,7 +62,7 @@ func NewToken() *Token {
 
 //a struct to rep user account
 type Account struct {
-	ID		 uint    `json:"id"`
+	ID       uint   `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Token    string `json:"token";sql:"-"`
@@ -72,4 +71,3 @@ type Account struct {
 func NewAccount() *Account {
 	return &Account{}
 }
-

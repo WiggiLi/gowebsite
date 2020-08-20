@@ -1,76 +1,92 @@
-<!DOCTYPE html>
-<html>
-    <head>
-		<meta charset="UTF-8"/>
-        <title>input</title>
-		<style>
-			.container{
-				font: 1em sans-serif;
-				width:600px;
-				min-height:500px;
-				margin:auto;
-				border:1px solid #000;
-				position: relative;
-			}
-			h1,h2,h3,h4,h5,h6 {margin: 0;}
-			.page{
-				width:600px;
-				height:430px;
-				position: absolute;
-				top:60px;
-				display: none;
-				background-color: #fff;
-				text-align: center;
-			}
-			div:first-of-type{
-				display:block;
-				z-index: 1;
-			}
-			div:target{
-				display:block;
-				z-index: 2;
-			}
-		</style>
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Signin</title>
+    <!--<meta http-equiv="refresh" content="0;url=#login">-->
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/signin.css" rel="stylesheet">
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+        
+        .container {
+            position: relative;
+	        margin: auto;
+        }
+        
+        form:target {
+            display: block;
+            z-index: 2;
+        }
+    </style>
+    <!-- Custom styles for this template -->
+
 </head>
 
-<body>
-	<script>
-		var name = document.cookie.replace(/(?:(?:^|.*;\s*)name\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-		console.log("name " + name)
-		if (name != ""){
-			window.location.replace("http://localhost:4200/static/inner.html");
-		}
-	</script>
 
-	<div class="container">
-		<nav>
-			<a href='#register'>Register</a>
-			<a href='#login'>Login</a>
-		</nav>
-		
-		<div id="register" class="page">
-			<p>Register</p>
-			<form method="POST" action="http://localhost:4200/new">
-				<label for="email_register">Email</label>
-				<input type="email" id="email_register" name="email_register" required></br>
-				<label for="password_register">Password</label>
-				<input type="password" id="password_register" name="password_register" placeholder="6-11 digits or letters" pattern="[0-9a-zA-Z]{6,11}" required></br>
-				<button type="submit">Register</button>
-			</form>
-		</div>
+<body class="text-center">
 
-		<div id="login" class="page">
-			<p>Login</p>
-			<form method="POST" action="http://localhost:4200/login">
-				<label for="email_login">Email</label>
-				<input type="email" id="email_login" name="email_login" required></br>
-				<label for="password_login">Password</label>
-				<input type="password" id="password_login" name="password_login" placeholder="6-11 digits or letters" pattern="[0-9a-zA-Z]{6,11}" required></br>
-				<button type="submit">Login</button>
-			</form>
-		</div>
+    <div class="container">
+        <nav>
+            <a href='#register'>Register</a>
+            <a href='#login'>Login</a>
+        </nav>
 
-	</div>
+
+
+        <form id="register" method="POST" action="http://localhost:4200/new" class="form-signin text-center">
+
+            <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
+            <label for="email_register" class="sr-only">Email address</label>
+            <input type="email" id="email_register" name="email_register" class="form-control" placeholder="Email address" required autofocus>
+            <label for="password_register" class="sr-only">Password</label>
+            <input type="password" id="password_register" class="form-control" name="password_register" placeholder="6-11 digits or letters" pattern="[0-9a-zA-Z]{6,11}" required>
+            <div class="checkbox mb-3">
+                <label>
+                    <input type="checkbox" value="remember-me"> Remember me
+                </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+
+        </form>
+
+
+        <form id="login" method="POST" action="http://localhost:4200/login" class="form-signin text-center">
+
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+            <label for="email_login" class="sr-only">Email address</label>
+            <input type="email" id="email_login" name="email_login"  class="form-control" placeholder="Email address" required autofocus>
+            <label for="password_login" class="sr-only">Password</label>
+            <input type="password" id="password_login"  name="password_login" class="form-control" pattern="[0-9a-zA-Z]{6,11}" placeholder="Password" required>
+            <div class="checkbox mb-3">
+                <label>
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+            </div>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+
+        </form>
+
+    </div>
+
+
 
 </body>
+
 </html>

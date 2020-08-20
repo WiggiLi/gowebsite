@@ -1,14 +1,14 @@
 package api
 
 import (
-	"gowebsite/app"
 	"encoding/json"
-	//"fmt"
-	"log"
-	"time"
 	"flag"
+	"log"
+	"os"
 	"strconv"
+	"time"
 
+	"github.com/WiggiLi/gowebsite/app"
 	"github.com/buaazp/fasthttprouter"
 	"github.com/valyala/fasthttp"
 )
@@ -20,40 +20,39 @@ type WebServer struct {
 }
 
 // ParseJSON JSON data and pushes it to Application
-func (server *WebServer) createEvent(ctx *fasthttp.RequestCtx) {
+func (server *WebServer) createComment(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
 	ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST")
 
-	//log.Print("API got new event. Parsing started...")
+	//log.Print("API got new Comment. Parsing started...")
 
-	newEvent := app.NewEvent()
+	newComment := app.NewComment()
+	json.Unmarshal(ctx.PostBody(), &newComment)
 
-	json.Unmarshal(ctx.PostBody(), &newEvent)
-
-	server.application.RegisterEvent(newEvent)
+	server.application.RegisterComment(newComment)
 	time.Sleep(2 * time.Second)
 
-	//fmt.Printf("Inserted successfully.\n")
+	//log.Print("Inserted successfully.\n")
 	ctx.Response.SetStatusCode(fasthttp.StatusCreated)
 
-	json.NewEncoder(ctx).Encode(newEvent)
+	json.NewEncoder(ctx).Encode(newComment)
 }
 
 func (server *WebServer) getComms(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
-	ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST")
+	ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET")
 
-	payLoad := string(ctx.PostBody())
-	log.Print(payLoad)
+	pageID := ctx.UserValue("id")
 
-	newEvent := app.NewEvent()
+	i, err := strconv.Atoi(pageID.(string))
+	if err != nil {
+		log.Print(err)
+	}
+	//log.Print("pageID for comms", i)
+	comms := app.GetComments()
+	comms = server.application.GiveComments(i)
 
-	json.Unmarshal(ctx.PostBody(), &newEvent)
-
-	events := app.GetEvents()
-	events = server.application.GiveComments(newEvent)
-
-	json.NewEncoder(ctx).Encode(events)
+	json.NewEncoder(ctx).Encode(comms)
 	ctx.Response.SetStatusCode(fasthttp.StatusOK)
 }
 
@@ -63,13 +62,13 @@ func (server *WebServer) getContentByID(ctx *fasthttp.RequestCtx) {
 
 	contentID := ctx.UserValue("id")
 
-	i1, err := strconv.Atoi(contentID.(string))
+	i, err := strconv.Atoi(contentID.(string))
 	if err != nil {
-		//fmt.Printf("page ERROR. Type: %T\n", contentID)
+		log.Print(err)
 	}
 
 	events := app.NewContentPage()
-	events = server.application.GiveContent(i1)
+	events = server.application.GiveContent(i)
 
 	json.NewEncoder(ctx).Encode(events)
 	ctx.Response.SetStatusCode(fasthttp.StatusOK)
@@ -91,44 +90,40 @@ func (server *WebServer) createAccount(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST")
 
 	account := app.NewAccount()
-	account.Email = string(ctx.FormValue("email_register")) // Data from the form
-    account.Password = string(ctx.FormValue("password_register")) // Data from the form
+	account.Email = string(ctx.FormValue("email_register"))       // Data from the form
+	account.Password = string(ctx.FormValue("password_register")) // Data from the form
 
-	ans := server.application.CreateAcc(account)
+	status, acc := server.application.CreateAcc(account)
 
-	if ans["status"]==true {
-		acc := app.NewAccount()
-		acc = ans["account"].(*app.Account)
-		//fmt.Println("ans status true " + acc.Email)
+	if status == true {
 		SetCookie("name", acc.Email, ctx)
 		SetCookie("token", acc.Token, ctx)
-		ctx.Redirect("static/inner.html", 302)
-	}  else {
-		ctx.Redirect("static/index.html", 403)
+		ctx.Redirect("static/inner.html", fasthttp.StatusFound) //302
+	} else {
+		ctx.Redirect("static/index.html", fasthttp.StatusForbidden) // 403
 	}
 }
-
 
 func (server *WebServer) authenticate(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
 	ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST")
-	
+
 	account := app.NewAccount()
 
-	account.Email = string(ctx.FormValue("email_login")) // Data from the form
-    account.Password = string(ctx.FormValue("password_login")) // Data from the form
+	account.Email = string(ctx.FormValue("email_login"))       // Data from the form
+	account.Password = string(ctx.FormValue("password_login")) // Data from the form
 
 	ans := server.application.LoginAcc(account.Email, account.Password)
 
-	if ans["status"]==true {
+	if ans["status"] == true {
 		acc := app.NewAccount()
 		acc = ans["account"].(*app.Account)
-		//fmt.Println("ans status true " + acc.Email)
+		//log.Println("ans status true " + acc.Email)
 		SetCookie("name", acc.Email, ctx)
 		SetCookie("token", acc.Token, ctx)
-		ctx.Redirect("static/inner.html", 302)
+		ctx.Redirect("static/inner.html", fasthttp.StatusFound)
 	} else {
-		ctx.Redirect("static/index.html", 403)
+		ctx.Redirect("static/index.html", fasthttp.StatusForbidden)
 	}
 }
 
@@ -147,13 +142,13 @@ func SetCookie(name, value string, ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetCookie(&c)
 }
 
-func ClearCookie(name string, ctx *fasthttp.RequestCtx) {  
+func ClearCookie(name string, ctx *fasthttp.RequestCtx) {
 	var c fasthttp.Cookie
 	c.SetKey(name)
 	c.SetValue("")
 	c.SetPath("/")
 	c.SetMaxAge(-3600000)
-    ctx.Response.Header.SetCookie(&c)
+	ctx.Response.Header.SetCookie(&c)
 }
 
 // Start initializes Web Server, starts application and begins serving
@@ -162,29 +157,33 @@ func (server *WebServer) Start(errc chan<- error) {
 	flag.Parse()
 	hub := newHub()
 	go hub.run()
-		
-	port := ":4200"
-	router.POST("/comm", server.createEvent) // create comment
-	router.POST("/comms", server.getComms) //get all comments
+
+	router.POST("/comm", server.createComment)        // create comment
+	router.GET("/comms/:id", server.getComms)         //get all comments
 	router.GET("/content/:id", server.getContentByID) // get content for page
-	router.GET("/titles", server.getTitles) // get titles of all articles
+	router.GET("/titles", server.getTitles)           // get titles of all articles
 	router.GET("/socket", func(ctx *fasthttp.RequestCtx) {
-							serveWs(ctx, hub)
-						  })///imlement websocket for comments
-	
+		serveWs(ctx, hub)
+	}) ///imlement websocket for comments
+
 	router.POST("/new", server.createAccount)
 	router.POST("/login", server.authenticate)
 	router.POST("/logout", server.logout)
-	
+
 	router.GET("/", func(ctx *fasthttp.RequestCtx) {
 		log.Println("go to index")
-		ctx.Redirect("static/index.html", 200)
-	  })
+		ctx.Redirect("static/index.html#login", 200)
+	})
 
 	router.ServeFiles("/static/*filepath", "./static")
 
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "4200"
+	}
+
 	log.Print("Server is starting on port ", port)
-	errc <- fasthttp.ListenAndServe(port, JwtAuthentication(router.Handler))
+	errc <- fasthttp.ListenAndServe(":"+port, JwtAuthentication(router.Handler))
 }
 
 // NewWebServer constructs Web Server

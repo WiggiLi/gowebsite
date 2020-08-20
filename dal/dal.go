@@ -1,41 +1,39 @@
 package dal
 
 import (
-	"gowebsite/app"
-	"database/sql"
-	_ "github.com/lib/pq"
-	"github.com/joho/godotenv"
 	"context"
-	
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
-	"strconv"
 	"os"
+
+	"github.com/WiggiLi/gowebsite/app"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
-// MsSQL represents data for connection to Data base
-type MsSQL struct {
+// PostgreSQL represents data for connection to Data base
+type PSQL struct {
 	Host     string
 	DataBase *sql.DB
 }
 
+// NewPSQL constructs object of PostgreSQL
+func NewPSQL(host string, port int) (*PSQL, error) {
 
-// NewMsSQL constructs object of MsSQL
-func NewMsSQL(host string, port int) (*MsSQL, error) {
-
-	e := godotenv.Load() //Загрузить файл .env
+	e := godotenv.Load() //load file .env with data for db connecting string
 	if e != nil {
-		fmt.Print(e)
+		log.Print("Not exist .env with data for db connecting string.", e)
 	}
 
 	username := os.Getenv("db_user")
 	password := os.Getenv("db_pass")
 	dbName := os.Getenv("db_name")
+	//dbHost := os.Getenv("db_host")
 
 	//connString := "user=postgres password=mypass dbname=web_pages sslmode=disable"
-	connString := fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s", username, dbName, password) 
-	//fmt.Println(connString)
+	connString := fmt.Sprintf("host=%s user=%s dbname=%s password=%s sslmode=disable", host, username, dbName, password)
 	var err error
 	var db *sql.DB
 
@@ -49,19 +47,17 @@ func NewMsSQL(host string, port int) (*MsSQL, error) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	fmt.Printf("Connected to db!\n")
+	log.Print("Connected to db!\n")
 
-	res := &MsSQL{
+	res := &PSQL{
 		Host:     host,
 		DataBase: db}
 
 	return res, nil
 }
 
-
-
-// Create inserts new Event into DB
-func (t *MsSQL) Create(current *app.Event) error {
+// CreareComment inserts new Commentinto DB
+func (t *PSQL) CreareComment(current *app.Comment) error {
 	ctx := context.Background()
 	var err error
 	if t.DataBase == nil {
@@ -75,8 +71,8 @@ func (t *MsSQL) Create(current *app.Event) error {
 	if err != nil {
 		log.Fatal("Error pinging database: " + err.Error())
 	}
-
-	tsql := fmt.Sprintf("INSERT INTO comments (page, name, content) VALUES ('%s','%s','%s');", current.Page, current.Title, current.Description)
+	log.Printf("('%s','%s','%s');", current.Page, current.Name, current.Content)
+	tsql := fmt.Sprintf("INSERT INTO comments (page, name, content) VALUES ('%s','%s','%s');", current.Page, current.Name, current.Content)
 
 	stmt, err := t.DataBase.Prepare(tsql)
 	if err != nil {
@@ -97,7 +93,7 @@ func (t *MsSQL) Create(current *app.Event) error {
 	return nil
 }
 
-func (t *MsSQL) Read1(currentID int) (*app.ContentPage, error) {
+func (t *PSQL) ReadContent(currentID int) (*app.ContentPage, error) {
 	events := app.NewContentPage()
 
 	ctx := context.Background()
@@ -155,8 +151,8 @@ func (t *MsSQL) Read1(currentID int) (*app.ContentPage, error) {
 	return events, nil
 }
 
-func (t *MsSQL) Read2(current *app.Event) (*app.AllEvents, error) {
-	events := app.GetEvents()
+func (t *PSQL) ReadComments(currentPage int) (*app.AllComments, error) {
+	events := app.GetComments()
 
 	ctx := context.Background()
 	var err error
@@ -173,12 +169,12 @@ func (t *MsSQL) Read2(current *app.Event) (*app.AllEvents, error) {
 		log.Fatal("Error pinging database: " + err.Error())
 	}
 	//fmt.Printf("pag2 before i=%d, type: %T\n", current.Pag, current.Pag)
-	i1, err := strconv.Atoi(current.Pag)
-	if err != nil {
-		fmt.Printf("pagERROR i=%d, type: %T\n", current.Pag, current.Pag)
-	}
+	//i1, err := strconv.Atoi(currentPage)
+	//if err != nil {
+	//	log.Printf(err)
+	//}
 
-	tsql := fmt.Sprintf("SELECT page, name, content FROM comments where page=%d", i1)
+	tsql := fmt.Sprintf("SELECT page, name, content FROM comments where page=%d", currentPage)
 
 	stmt, err := t.DataBase.Prepare(tsql)
 	if err != nil {
@@ -198,7 +194,7 @@ func (t *MsSQL) Read2(current *app.Event) (*app.AllEvents, error) {
 	var count int = 0
 
 	for rows.Next() {
-		var id, page, title, description string
+		var page, title, description string
 
 		// Get values from row.
 		err := rows.Scan(&page, &title, &description)
@@ -207,21 +203,20 @@ func (t *MsSQL) Read2(current *app.Event) (*app.AllEvents, error) {
 			return nil, err
 		}
 
-		ev := *app.NewEvent()
-		ev.ID = id
+		ev := *app.NewComment()
 		ev.Page = page
-		ev.Title = title
-		ev.Description = description
+		ev.Name = title
+		ev.Content = description
 		*events = append(*events, ev)
 
-		fmt.Printf("ID: %d, Name: %s, Description: %s\n", id, title, description)
+		//fmt.Printf("ID: %d, Name: %s, Description: %s\n", id, title, description)
 		count++
 	}
 
 	return events, nil
 }
 
-func (t *MsSQL) Read3() (*app.AllTitles, error) {
+func (t *PSQL) ReadTitles() (*app.AllTitles, error) {
 	events := app.GetTitles()
 
 	ctx := context.Background()

@@ -2,27 +2,26 @@ package app
 
 import (
 	"log"
-	//"fmt"
 )
 
 // IncomeRegistration is an interface for accepting income requesrs for neccassery operations  from Web Server
 type IncomeRegistration interface {
-	RegisterEvent(*Event)
+	RegisterComment(*Comment)
 	GiveContent(int) *ContentPage
-	GiveComments(*Event) *AllEvents
+	GiveComments(int) *AllComments
 	GiveTitles() *AllTitles
-	CreateAcc(*Account) map[string]interface{} 
-	LoginAcc(email, password string) map[string]interface{} 
+	CreateAcc(*Account) (bool, *Account)
+	LoginAcc(email, password string) map[string]interface{}
 }
 
 // DataAccessLayer is an interface for DAL usage from Application
 type DataAccessLayer interface {
-	Create(*Event) error
-	Read1(int) (*ContentPage, error) //content
-	Read2(*Event) (*AllEvents, error) //comments
-	Read3() (*AllTitles, error) //titles
-	CreateAccDB(*Account) (map[string]interface{} , error)
-	LoginAccDB(email, password string) (map[string]interface{} , error)
+	CreareComment(*Comment) error
+	ReadContent(int) (*ContentPage, error)
+	ReadComments(int) (*AllComments, error)
+	ReadTitles() (*AllTitles, error)
+	CreateAccDB(*Account) (bool, *Account, error)
+	LoginAccDB(email, password string) (map[string]interface{}, error)
 }
 
 // Application is responsible for all logics and communicates with other layers
@@ -31,81 +30,81 @@ type Application struct {
 	errc chan<- error
 }
 
-// RegisterEvent sends Event to DAL for saving/registration
-func (app *Application) RegisterEvent(currentData *Event) {
-	err := app.DB.Create(currentData)
+// RegisterComment sends comment to DAL for its saving
+func (app *Application) RegisterComment(currentData *Comment) {
+	err := app.DB.CreareComment(currentData)
 
 	if err != nil {
 		app.errc <- err
 		return
 	}
 
-	log.Print("New event added to MS SQL server...")
+	log.Print("New comment added to PostgreSQL...")
 }
 
+// GiveContent sends content for page with currentID DAL
 func (app *Application) GiveContent(currentID int) *ContentPage {
 	allEv := NewContentPage()
-	allEv, err := app.DB.Read1(currentID)
+	allEv, err := app.DB.ReadContent(currentID)
 
 	if err != nil {
 		app.errc <- err
 		return nil
 	}
 
-	log.Print("Events readed from MS SQL server...")
+	log.Printf("Content readed for %d page", currentID)
 	return allEv
 }
 
-// RegisterEvent sends Event to DAL for saving/registration
-func (app *Application) GiveComments(currentData *Event) *AllEvents {
-	allEv := GetEvents()
-	allEv, err := app.DB.Read2(currentData)
+// GiveComments sends all comments from DAL
+func (app *Application) GiveComments(currentPage int) *AllComments {
+	allEv := GetComments()
+	allEv, err := app.DB.ReadComments(currentPage)
 
 	if err != nil {
 		app.errc <- err
 		return nil
 	}
 
-	//log.Print("Events readed from MS SQL server...")
+	log.Printf("Comments readed for %d page", currentPage)
 	return allEv
 }
 
 func (app *Application) GiveTitles() *AllTitles {
 	allEv := GetTitles()
-	allEv, err := app.DB.Read3()
+	allEv, err := app.DB.ReadTitles()
 
 	if err != nil {
 		app.errc <- err
 		return nil
 	}
 
-	//log.Print("Events readed from MS SQL server...")
+	log.Print("Titles readed for page")
 	return allEv
 }
 
-func (app *Application)  CreateAcc(acc *Account) map[string]interface{} {
-	flag, err := app.DB.CreateAccDB(acc)
+func (app *Application) CreateAcc(acc *Account) (bool, *Account) {
+	flag, acc, err := app.DB.CreateAccDB(acc)
 
 	if err != nil {
 		app.errc <- err
-		return map[string]interface{} {"status" : false, "account" : nil}
+		return false, nil
 	}
 
 	log.Print("Created new user...")
-	return flag
+	return flag, acc
 }
 
-func (app *Application)  LoginAcc(email, password string) map[string]interface{} {
+func (app *Application) LoginAcc(email, password string) map[string]interface{} {
 	flag, err := app.DB.LoginAccDB(email, password)
 
 	if err != nil {
 		app.errc <- err
-		return map[string]interface{} {"status" : false, "account" : nil}
+		return map[string]interface{}{"status": false, "account": nil}
 	}
 
 	log.Print("Checked user...")
 	return flag
-
 }
 
 // NewApplication constructs Application
